@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	topic         = "test-druid7"
+	topic         = "test-druid9"
 	brokerAddress = "localhost:9092"
 )
 
@@ -46,25 +46,27 @@ func init() {
 }
 
 func main() {
-	start := time.Now()
 	ctx := context.Background()
+	start := time.Now()
 	parser := gonx.NewParser(format)
-	files, err := ioutil.ReadDir(logDir)
-	var wgHandleFile sync.WaitGroup
-	if err != nil {
-		panic(err)
+	for {
+		files, err := ioutil.ReadDir(logDir)
+		var wgHandleFile sync.WaitGroup
+		if err != nil {
+			panic(err)
+		}
+		// for {
+		for _, file := range files {
+			wgHandleFile.Add(1)
+			filePath := logDir + "/" + file.Name()
+			go HandleFile(filePath, parser, ctx, &wgHandleFile)
+		}
+		wgHandleFile.Wait()
+		elapsed := time.Since(start)
+		log.Printf("Binomial took %s", elapsed)
+		// time.Sleep(time.Second * 60)
+		// }
 	}
-	// for {
-	for _, file := range files {
-		wgHandleFile.Add(1)
-		filePath := logDir + "/" + file.Name()
-		go HandleFile(filePath, parser, ctx, &wgHandleFile)
-	}
-	wgHandleFile.Wait()
-	elapsed := time.Since(start)
-	log.Printf("Binomial took %s", elapsed)
-	time.Sleep(time.Second * 60)
-	// }
 }
 func HandleFile(filepath string, parser *gonx.Parser, ctx context.Context, wgHandleFile *sync.WaitGroup) {
 	defer wgHandleFile.Done()
@@ -87,17 +89,17 @@ func HandleFile(filepath string, parser *gonx.Parser, ctx context.Context, wgHan
 			count++
 			messageKey := fmt.Sprintf("%s-%d", filepath, count)
 			// json.Marshal(rec.Fields())
-			go PubLishMessage(ctx, rec, &wg, messageKey)
-			// PubLishMessage(ctx, rec, messageKey)
+			// go PubLishMessage(ctx, rec, &wg, messageKey)
+			PubLishMessage(ctx, rec, messageKey)
 
 		}
 	}
-	fmt.Printf("file===%s, total_record=%d", filepath, count)
+	// fmt.Printf("file===%s, total_record=%d", filepath, count)
 	wg.Wait()
 }
-func PubLishMessage(ctx context.Context, record *gonx.Entry, wg *sync.WaitGroup, key string) {
-	wg.Add(1)
-	defer wg.Done()
+func PubLishMessage(ctx context.Context, record *gonx.Entry, key string) {
+	// wg.Add(1)
+	// defer wg.Done()
 	entryBytes, err := json.Marshal(record.Fields())
 	if err != nil {
 		log.Fatal(err)
