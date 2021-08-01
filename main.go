@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	topic         = "test-druid9"
+	topic         = "test-druid10"
 	brokerAddress = "localhost:9092"
 )
 
@@ -27,7 +27,7 @@ var logDir string
 var writer *kafka.Writer
 
 func init() {
-	// l := log.New(os.Stdout, "kafka writer: ", 0)
+	l := log.New(os.Stdout, "kafka writer: ", 0)
 	flag.StringVar(&format, "format", `$remote_addr $http_x_forwarded_for [$time_iso8601] $http_host "$request" $status $bytes_sent "$http_referer" "$http_user_agent" $rest_value`, "Nginx log_format name")
 	// flag.StringVar(&logDir, "logDir", `/home/huyduong/Documents/logs`, "log_dir_path")
 	// flag.StringVar(&logDir, "logDir", `/home/vunm/logs`, "log_dir_path")
@@ -41,7 +41,7 @@ func init() {
 		// BatchBytes:   1048576 * 10,
 		// BatchTimeout: 2 * time.Second,
 		RequiredAcks: -1,
-		// Logger:       l,
+		Logger:       l,
 	})
 }
 

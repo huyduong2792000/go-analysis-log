@@ -1,0 +1,10 @@
+[Unit]
+Description=Go collect log service
+
+[Service]
+User=root
+Group=root
+ExecStart=/bin/bash /usr/local/bin/go_collect_log
+
+[Install]
+WantedBy=multi-user.target

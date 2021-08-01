@@ -1,0 +1,4 @@
+---
+# vars file for go_collect_log
+src_path: go_collect_log
+dest_path: /usr/local/bin

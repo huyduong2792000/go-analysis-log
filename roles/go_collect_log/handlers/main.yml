@@ -1,0 +1,10 @@
+---
+# handlers file for go_collect_log
+- name: Start service 
+  service:
+    name: "{{item}}"
+    state: started
+    enabled: yes
+
+  with_items:
+    - go_collect_log
